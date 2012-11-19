@@ -1,0 +1,79 @@
+[level]
+tileset = ground.png
+map = #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #.............nnnnnn.......................#
+      #.............nnnnnn.......................#
+      #.............nnnnnn.......................#
+      #.............nnnnnn.......................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+      #..........................................#
+
+[.]
+name = deploy
+tile = 0, 3
+block = False
+
+[n]
+name = fight
+tile = 1,3
+block = False
+
+[#]
+name = wall
+wall = true
+block = True
+
+[b]
+name = crate
+tile = 0, 3
+block = True
+sprite = crate.png
+
+[s]
+name = skeleton
+tile = 0,3
+block = False
+sprite = skeleton.png

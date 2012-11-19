@@ -1,0 +1,176 @@
+import imp
+import gamesprites 
+import pygame
+import sys
+level = None
+player = None
+playerSprite = None
+objects= None
+background = None
+rows = None
+columns = None
+layout = None
+screen = None
+def loadLevel(levelFile):
+
+   # Import the level and extract the data
+   global level, player, objects, background, rows, columns, layout
+   level = imp.find_module(levelFile)
+   level = imp.load_module('level', level[0], level[1], level[2])
+   level = level.Level()
+   player = level.getPlayer()
+   objects = level.getObjects()
+   background, rows = level.getBackground()
+   layout = level.getLayout()
+   columns = len(layout[0])
+
+def setup():
+
+   global screen
+   pygame.init()
+   screen = pygame.display.set_mode((background.get_rect().width,
+background.get_rect().height))
+
+def loadBackground():
+
+   screen.blit(background, background.get_rect())
+   pygame.display.update()
+
+def loadSprites():
+
+   global player, playerSprite
+
+   # Find the position of the player
+   colWidth = background.get_rect().width / columns
+   xPlayer = colWidth / 2
+   rowHeight = background.get_rect().height / rows
+   yPlayer = (rowHeight * (rows - 1)) + (rowHeight / 2)
+
+   # Load the player sprite
+   playerSprite = gamesprites.Player(player, xPlayer, yPlayer)
+
+   # Create a player sprite group
+   player = pygame.sprite.RenderUpdates(playerSprite)
+
+   # Load each object sprite
+   for y in xrange(len(layout)):
+      for x in xrange(len(layout[y])):
+         if layout[y][x]:
+            layout[y][x] = gamesprites.Object(objects[layout[y][x] - 1], (colWidth * (x)) + (colWidth / 2))
+   # Turn each layout row into a sprite group
+   for y in xrange(len(layout)):
+      group = pygame.sprite.RenderUpdates()
+      for x in xrange(len(layout[y])):
+         if layout[y][x]:
+            group.add(layout[y][x])
+      group.y = 0
+      layout[y] = group
+
+
+
+def erase(screen, rect):
+
+   # Get the piece of the original background and copy it to the screen
+   screen.blit(background.subsurface(rect).copy(), rect)
+
+def run(playerSpeed = 250, objectSpeed = 1000):
+
+   # Get the row and column widths
+   colWidth = background.get_rect().width / columns
+   rowHeight = background.get_rect().height / rows
+
+   # Define a variable that stores whether an arrow key is pressed
+   # This is used for continuous/scrolling movement of the player
+   moving = False
+
+   # We should also define a variable that signals stops
+   # Otherwise, if a player pushes a key in between updates and releases
+   # it, the move will not be registered
+   movingStop = False
+
+   # Create a list to store the visible groups
+   visible = []
+
+   # Blit the player
+   updateRects = player.draw(screen)
+   pygame.display.update(updateRects)
+
+   # Load a screen update event into the timer
+   # This will update the player only
+   pygame.time.set_timer(pygame.USEREVENT + 1, playerSpeed)
+
+   # Load a screen update event into the timer
+   # This will update the objects
+   pygame.time.set_timer(pygame.USEREVENT + 2, objectSpeed)
+   while True:
+
+      for event in pygame.event.get():
+         if event.type == pygame.QUIT:
+            sys.exit()
+
+         # Check for a key push by the user
+         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+               moving = 'right'
+            elif event.key == pygame.K_LEFT:
+               moving = 'left'
+
+         # Check by a key release by the user
+         elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT or pygame.K_LEFT:
+               movingStop = True
+
+# Check for the update player event
+         elif event.type == pygame.USEREVENT + 1:
+
+            # Move the player if needed
+            if moving == 'right':
+               player.update(colWidth)
+            if moving == 'left':
+               player.update(-colWidth)
+
+            # Stop movement if needed
+            if movingStop:
+               moving = False
+               movingStop = False
+
+            # Collision detection
+            for group in visible:
+               if pygame.sprite.spritecollideany(playerSprite, group):
+                  return False
+
+            # Redraw the player
+            player.clear(screen, erase) 
+            updateRects = player.draw(screen)
+
+            pygame.display.update(updateRects)
+
+# Check for the update object event
+         elif event.type == pygame.USEREVENT + 2:
+
+            # Add a row
+            if layout:
+               visible.append(layout.pop())
+
+            # Delete passed rows
+            if visible:
+               if visible[0].y >= screen.get_rect().height:
+                  visible.pop(0)
+
+            # If there are no visible rows, the player has won
+            else:
+               return True
+
+            # Make a list of rectangles to be updated
+            updateRects = []
+
+            # Update each group
+            for group in visible:
+               group.clear(screen, erase)
+               group.update(rowHeight)
+               group.y = group.y + rowHeight
+               updateRects.extend(group.draw(screen))
+
+            pygame.display.update(updateRects)
+
+
