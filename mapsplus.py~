@@ -1,6 +1,8 @@
 import pygame
 import pygame.locals
 import ConfigParser
+import BRB
+import warhammer
 
 def load_tile_table(filename, width, height):
     image = pygame.image.load(filename).convert()
@@ -220,9 +222,17 @@ if __name__ == "__main__":
     SPRITE_CACHE = TileCache(32, 32)
     sprites = pygame.sprite.RenderUpdates()
     skelly = []
+    Unit1 = []
+    Unit2 = []
+    Unit1.minX = 0
     for pos, tile in level.items.iteritems():
         sprite = Sprite(pos, SPRITE_CACHE[tile["sprite"]])
         if tile['name'] == 'skeleton':
+            print pos
+            if pos[1] < 12:
+                Unit1.append((sprite,BRB.Model(4,3,3,4,4,1,2,2,9,2,1,10)))
+            else:
+                Unit2.append((sprite,BRB.Model(4,3,3,4,4,1,2,2,9,2,1,10)))
             skelly.append(sprite)
         sprites.add(sprite)
 
@@ -245,7 +255,12 @@ if __name__ == "__main__":
     overlays.draw(screen)
     pygame.display.flip()
     turn = 0
+    mover =0
+    moves = 4
+    unit = Unit1
+    movesleft = 4
     while turn < 6:
+        print "turn",turn
 
         # XXX draw all the objects here
         sprites.clear(screen, background)
@@ -254,6 +269,17 @@ if __name__ == "__main__":
         overlays.draw(screen)
         pygame.display.update(dirty)
         clock.tick(15)
+        if movesleft <= 0:
+            movesleft = moves
+            if mover == 0:
+                print "player 1's moves"
+                mover = 1
+                unit = Unit2
+                turn += 1
+            else:
+                print "player 2's moves"
+                mover = 0
+                unit = Unit1
         for event in pygame.event.get():
             if event.type == pygame.locals.QUIT:
                 game_over = True
@@ -277,6 +303,12 @@ if __name__ == "__main__":
                     print "bye"
                     turn = 6
                     game_over = True
-#                if not level.is_blocking((sprites.spritedict[skelly[0]].x+move[0])/24+1,(sprites.spritedict[skelly[0]].y+move[1])/16+1):
- #                   for item in skelly:
-  #                      item.move(*move)
+                block = True
+                blockerpos1 = (sprites.spritedict[unit[0][0]].x+move[0])/24+1,(sprites.spritedict[unit[0][0]].y+move[1])/16+1
+                blockerpos2 = (sprites.spritedict[unit[-1][0]].x+move[0])/24+1,(sprites.spritedict[unit[-1][0]].y+move[1])/16+1
+                if level.is_blocking(*blockerpos1) or level.is_blocking(*blockerpos2):
+                    block = False
+                if block:
+                    movesleft -= 1
+                    for item in unit:
+                        item[0].move(*move)

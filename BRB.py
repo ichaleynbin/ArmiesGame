@@ -3,12 +3,75 @@ from warhammer import ward,armor,wound,hit
 import random
 import Lizardmen
 
+####        Dice Rolls
+
+def D6(num):
+    return map(lambda x:random.randint(1,6),range(num))
+
+def D3(num):
+    return map(lambda x:random.randint(1,3),range(num))
+
+def ArtilDice(num):
+    return map(lambda x:2*random.randint(1,5),range(num))
+
+####        Organized Attack functions
+
+def Attack(Def,verbose,):
+    """
+    The generic Attack model, which has no special rules applied to it.
+    """
+    return ward(armor(wound(hit(self.Ata,self.WepS,Def.WepS,verbose)[0],self.Str,Def.Tuf,verbose),self.Str,Def.Tuf,verbose),Def.Ward,verbose)
+
+def PoisonedAttack(Def,verbose):
+    """
+    Poisoned Attacks; any dice which hits on a 6 automatically wounds
+    """
+    wounds = 0
+    hits,rolls = hit(self.Ata,self.WepS,Def.WepS,verbose)
+    for dice in rolls:
+        if dice == 6:
+            wounds += 1
+            hits -= 1
+    wounds += wound(hits,self.Str,Def.Tuf,verbose)
+    return ward(armor(wounds,self.Str,Def.Armr),Def.Ward)
+
+def HatredAttacks(Def,verbose):
+    """
+    Attacks made with Hatred of the opponent can reroll misses.
+    Most opponents have normal hatred which can only be applied
+    in the first round of combat. 
+    This rule is intended to be used beside a normal attack,
+    and only applied in the first round of combat. 
+    """
+    hits,rolls = hit(self.Ata,self.WepS,Def.WepS,verbose)
+    hits += hit(self.Ata-hits,self.WepS,Def.WepS,verbose)[0]
+    return ward(armor(wound(hits,self.Str,Def.Tuf,verbose),self.Str,Def.Armr,verbose),Def.Ward,verbose)
 
 ####        CLASSES
 
 class Model(object):
-    def __init__(self):
-        pass
+    """
+    All models use this basic class. Methods can be overwritten
+    through superclassing for specialty subclasses
+    """
+
+    def __init__(self,Mov,WepS,BalS,Str,Tuf,Wnd,ini,ata,Led,Armr,Ward,Points):
+        """
+        Set the model's basic GURPS style stats
+        """
+        self.Mov = Mov
+        self.WepS = WepS
+        self.BalS = BalS
+        self.Str = Str
+        self.Tuf = Tuf
+        self.Wnd = Wnd
+        self.Ini = ini
+        self.Ata = ata
+        self.Led = Led
+        self.Armr = Armr
+        self.Ward = Ward
+        self.Pts = Points
+        self.Attack = Attack
 
 class Unit(object):
     def __init__(self):
@@ -353,3 +416,6 @@ def combatround(UnitList1,UnitList2,verbose):
     return combatres;
 
 ####        POST COMBAT
+
+if __name__ == '__main__':
+    print ArtilDice(5)
